@@ -1,0 +1,14 @@
+{
+  "identifier": "workspace-todo",
+  "description": "悬浮待办窗口只能使用待办和窗口控制命令。",
+  "windows": ["todo"],
+  "permissions": [
+    "core:event:default",
+    "allow-dispatch",
+    "allow-get-quick-controls",
+    "allow-show-todo-window",
+    "allow-set-todo-on-top",
+    "allow-minimize-todo-window",
+    "allow-navigate-main"
+  ]
+}

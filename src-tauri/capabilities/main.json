@@ -1,0 +1,30 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-local",
+  "description": "ResumeDesk 只允许本机应用窗口使用窄化的 Rust 命令。",
+  "windows": ["main"],
+  "permissions": [
+    "allow-dispatch",
+    "allow-preview-import-document",
+    "allow-import-document",
+    "allow-read-document",
+    "allow-open-document",
+    "allow-import-knowledge",
+    "allow-read-knowledge",
+    "allow-open-knowledge",
+    "allow-open-source-link",
+    "allow-manage-backup",
+    "allow-test-ai",
+    "allow-cancel-ai",
+    "core:event:default",
+    "allow-get-quick-controls",
+    "allow-set-quick-control",
+    "allow-show-todo-window",
+    "allow-set-todo-on-top",
+    "allow-minimize-todo-window",
+    "allow-navigate-main",
+    "allow-chat-dispatch",
+    "allow-chat-send",
+    "allow-chat-cancel"
+  ]
+}
