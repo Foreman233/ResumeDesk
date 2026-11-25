@@ -1,0 +1,68 @@
+.todo-toolbar { display: grid; grid-template-columns: minmax(180px, 1fr) 140px 140px; padding: 12px 14px; align-items: center; gap: 8px; }
+.todo-toolbar .search-input { width: 100%; }
+.todo-main-panel > .notice { margin: 10px 14px; }
+.todo-table { border-top: 1px solid #edf0f7; }
+.todo-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 14px 16px; }
+.todo-row + .todo-row { border-top: 1px solid #edf0f7; }
+.todo-row-body { min-width: 0; flex: 1; }
+.todo-row-title, .todo-row-meta, .todo-row-links, .todo-row-actions { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.todo-row-title strong { color: #252e49; overflow-wrap: anywhere; }
+.todo-row-meta { margin-top: 5px; color: #616d87; font-size: 12px; }
+.todo-row-meta span, .todo-row-links button { display: inline-flex; align-items: center; gap: 4px; }
+.todo-row-description, .todo-row p { margin: 5px 0; color: #4d5871; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
+.todo-row .todo-meeting-link { color: #423ab1; }
+.todo-row-links { margin-top: 6px; }
+.todo-row-actions { justify-content: flex-end; }
+.todo-row.todo-completed .todo-row-title strong { text-decoration: line-through; color: #626d83; }
+.todo-candidate-picker { position: relative; }
+.todo-candidate-results { display: grid; gap: 2px; padding: 4px; border: 1px solid #e4e6f1; border-radius: 8px; margin-top: 3px; }
+.todo-candidate-results > button { justify-content: flex-start; }
+.todo-candidate-results > small { padding: 4px 6px; }
+.todo-interview-fields { min-width: 0; margin: 0; padding: 9px 11px 11px; border: 1px solid #e4e6f1; border-radius: 10px; background: #fafaff; }
+.todo-interview-fields > legend { color: #454e6a; font-weight: 650; padding: 0 4px; }
+.todo-suggestion { padding: 8px 10px; border: 1px solid #e8e6fb; border-radius: 8px; background: #f9f8ff; }
+.todo-suggestion > span { display: block; font-size: 13px; color: #454e6a; }
+.todo-suggestion .btn { margin-top: 5px; }
+.link-button { color: #463cca; font-weight: 580; text-align: left; }
+.link-button:hover { text-decoration: underline; }
+
+.todo-widget { height: 100vh; min-height: 160px; display: flex; flex-direction: column; background: #fbfbfe; color: #202940; }
+.todo-widget-header, .todo-widget-toolbar, .todo-widget-footer { display: flex; justify-content: space-between; align-items: center; }
+.todo-widget-header { gap: 5px; min-height: 46px; padding: 5px 8px 5px 11px; border-bottom: 1px solid #e6e8f3; background: #ffffff; }
+.todo-widget-header > div { display: flex; align-items: center; gap: 6px; }
+.todo-widget-header h1 { margin: 0; font-size: 15px; font-weight: 700; white-space: nowrap; }
+.todo-widget-icon { display: grid; place-items: center; width: 28px; height: 28px; color: #4c43cd; background: #f0eefe; border-radius: 8px; }
+.todo-widget-header .inline-actions { gap: 1px; }
+.todo-widget .icon-btn { width: 30px; height: 30px; min-width: 30px; min-height: 30px; padding: 0; }
+.todo-widget .icon-btn[aria-pressed=true] { color: #4136c7; background: #ebe8fe; }
+.todo-widget-toolbar { padding: 4px 11px; border-bottom: 1px solid #edf0f7; }
+.todo-widget-toolbar > span { color: #626d83; font-size: 12px; }
+.todo-widget-toolbar .btn { min-height: 29px; padding-inline: 6px; }
+.todo-widget-list { flex: 1; overflow: auto; }
+.todo-widget-section { border-bottom: 1px solid #e9ebf3; }
+.todo-widget-section h2, .todo-widget-section summary { margin: 0; padding: 6px 11px; color: #454e6a; font-size: 12px; font-weight: 650; background: #f5f5fb; }
+.todo-widget-section h2 { display: flex; justify-content: space-between; }
+.todo-widget-section h2.text-error { color: #9e3142; }
+.todo-widget-section h2 span, .todo-widget-section summary span { color: #69728a; }
+.todo-widget-section summary { cursor: pointer; }
+.todo-widget-section summary span { float: right; }
+.todo-widget-section > small { display: block; padding: 3px 11px 6px; color: #69728a; }
+.todo-widget-item { display: flex; align-items: center; gap: 7px; padding: 8px 11px; border-bottom: 1px solid #eef0f6; }
+.todo-widget-item:last-child { border-bottom: 0; }
+.todo-widget-done { flex: 0 0 20px; display: grid; place-items: center; color: #28805d; }
+.todo-widget-item:hover { background: #f5f4fc; }
+.todo-widget-item-link { text-align: left; display: grid; gap: 2px; flex: 1; min-width: 0; padding: 2px 0; }
+.todo-widget-item-link strong, .todo-widget-item-link small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.todo-widget-item-link small { font-size: 11px; color: #6b758b; }
+.todo-check { border: 1px solid #d6daed; border-radius: 50%; width: 20px; height: 20px; display: grid; place-items: center; color: #6c75a0; background: white; flex: 0 0 20px; }
+.todo-check:hover { color: #4338bd; border-color: #a9a2eb; background: #f1efff; }
+.todo-widget-footer { padding: 5px 8px 5px 11px; border-top: 1px solid #e6e8f3; font-size: 12px; color: #66718a; background: #fff; }
+.todo-widget-footer .btn { min-height: 27px; }
+.todo-widget > .notice, .todo-widget-list > .notice { margin: 6px 9px; }
+.todo-widget-quick { display: flex; gap: 5px; padding: 6px 10px; border-bottom: 1px solid #eef0f6; }
+.todo-widget-quick input { min-width: 0; }
+
+@media (max-width: 920px) {
+  .todo-toolbar { grid-template-columns: minmax(140px, 1fr) 110px 110px; }
+  .todo-row { flex-wrap: wrap; }
+}
