@@ -1,0 +1,90 @@
+%PDF-1.7
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 4 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Page /MediaBox [0 0 595 842] /Parent 2 0 R /Resources << /Font << /H 5 0 R /C 6 0 R >> >> /Contents 10 0 R >>
+endobj
+4 0 obj
+<< /Type /Page /MediaBox [0 0 595 842] /Parent 2 0 R /Resources << /Font << /H 5 0 R /C 6 0 R >> >> /Contents 11 0 R >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type0 /BaseFont /STSong-Light /Encoding /UniGB-UCS2-H /DescendantFonts [7 0 R] /ToUnicode 9 0 R >>
+endobj
+7 0 obj
+<< /Type /Font /Subtype /CIDFontType0 /BaseFont /STSong-Light /CIDSystemInfo << /Registry (Adobe) /Ordering (GB1) /Supplement 4 >> /FontDescriptor 8 0 R /DW 1000 >>
+endobj
+8 0 obj
+<< /Type /FontDescriptor /FontName /STSong-Light /Flags 6 /FontBBox [-25 -254 1000 880] /ItalicAngle 0 /Ascent 880 /Descent -120 /CapHeight 700 /StemV 80 >>
+endobj
+9 0 obj
+<< /Length 298 >>
+stream
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def
+/CMapName /ResumeDeskUnicode def
+/CMapType 2 def
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end
+endstream
+endobj
+10 0 obj
+<< /Length 982 >>
+stream
+0.13 0.16 0.28 rg 0 600 595 242 re f
+0.63 0.57 0.98 rg 49 748 36 3 re f
+BT /H 37 Tf 1 1 1 rg 1 0 0 1 48 690 Tm (LIN QIAO) Tj ET
+BT /H 13 Tf 0.76 0.75 0.92 rg 1 0 0 1 50 655 Tm (DATA ANALYST) Tj ET
+BT /H 10 Tf 0.35 0.31 0.69 rg 1 0 0 1 50 580 Tm (CANDIDATE PROFILE) Tj ET
+BT /H 13 Tf 0.18 0.20 0.30 rg 1 0 0 1 50 547 Tm (Name: Lin Qiao) Tj ET
+BT /H 13 Tf 0.18 0.20 0.30 rg 1 0 0 1 50 523 Tm (Current Role: Data Analyst) Tj ET
+BT /H 13 Tf 0.18 0.20 0.30 rg 1 0 0 1 50 499 Tm (lin.qiao@example.invalid) Tj ET
+0.88 0.89 0.94 RG 50 465 m 545 465 l S
+BT /H 10 Tf 0.35 0.31 0.69 rg 1 0 0 1 50 436 Tm (SELECTED EXPERIENCE) Tj ET
+BT /H 13 Tf 0.18 0.20 0.30 rg 1 0 0 1 50 402 Tm (Use SQL and Excel to track product metrics.) Tj ET
+BT /H 13 Tf 0.18 0.20 0.30 rg 1 0 0 1 50 375 Tm (Python for weekly cohort reports.) Tj ET
+BT /H 13 Tf 0.18 0.20 0.30 rg 1 0 0 1 50 348 Tm (Visualization with Tableau.) Tj ET
+BT /H 9 Tf 0.42 0.45 0.58 rg 1 0 0 1 50 48 Tm (FICTIONAL RESUMEDESK SAMPLE  /  1) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Length 294 >>
+stream
+0.92 0.91 0.99 rg 0 690 595 152 re f
+BT /H 21 Tf 0.19 0.17 0.35 rg 1 0 0 1 50 750 Tm (PROJECT NOTES) Tj ET
+BT /H 13 Tf 0.20 0.23 0.38 rg 1 0 0 1 50 650 Tm (Practice file for page navigation and zoom.) Tj ET
+BT /H 9 Tf 0.42 0.45 0.58 rg 1 0 0 1 50 48 Tm (FICTIONAL RESUMEDESK SAMPLE  /  2) Tj ET
+endstream
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000256 00000 n 
+0000000391 00000 n 
+0000000488 00000 n 
+0000000627 00000 n 
+0000000807 00000 n 
+0000000979 00000 n 
+0000001328 00000 n 
+0000002362 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+2708
+%%EOF

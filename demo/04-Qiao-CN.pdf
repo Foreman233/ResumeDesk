@@ -1,0 +1,134 @@
+%PDF-1.7
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 4 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Page /MediaBox [0 0 595 842] /Parent 2 0 R /Resources << /Font << /H 5 0 R /C 6 0 R >> >> /Contents 10 0 R >>
+endobj
+4 0 obj
+<< /Type /Page /MediaBox [0 0 595 842] /Parent 2 0 R /Resources << /Font << /H 5 0 R /C 6 0 R >> >> /Contents 11 0 R >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type0 /BaseFont /STSong-Light /Encoding /UniGB-UCS2-H /DescendantFonts [7 0 R] /ToUnicode 9 0 R >>
+endobj
+7 0 obj
+<< /Type /Font /Subtype /CIDFontType0 /BaseFont /STSong-Light /CIDSystemInfo << /Registry (Adobe) /Ordering (GB1) /Supplement 4 >> /FontDescriptor 8 0 R /DW 1000 >>
+endobj
+8 0 obj
+<< /Type /FontDescriptor /FontName /STSong-Light /Flags 6 /FontBBox [-25 -254 1000 880] /ItalicAngle 0 /Ascent 880 /Descent -120 /CapHeight 700 /StemV 80 >>
+endobj
+9 0 obj
+<< /Length 925 >>
+stream
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def
+/CMapName /ResumeDeskUnicode def
+/CMapType 2 def
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+43 beginbfchar
+<4E54> <4E54>
+<793A> <793A>
+<4F8B> <4F8B>
+<6570> <6570>
+<636E> <636E>
+<5206> <5206>
+<6790> <6790>
+<5E08> <5E08>
+<59D3> <59D3>
+<540D> <540D>
+<FF1A> <FF1A>
+<5F53> <5F53>
+<524D> <524D>
+<804C> <804C>
+<4F4D> <4F4D>
+<90AE> <90AE>
+<7BB1> <7BB1>
+<6784> <6784>
+<5EFA> <5EFA>
+<7528> <7528>
+<6237> <6237>
+<7559> <7559>
+<5B58> <5B58>
+<5E73> <5E73>
+<53F0> <53F0>
+<FF0C> <FF0C>
+<4F7F> <4F7F>
+<548C> <548C>
+<7535> <7535>
+<5B50> <5B50>
+<8868> <8868>
+<683C> <683C>
+<3002> <3002>
+<53C2> <53C2>
+<4E0E> <4E0E>
+<5E02> <5E02>
+<573A> <573A>
+<8C03> <8C03>
+<7814> <7814>
+<6708> <6708>
+<5EA6> <5EA6>
+<590D> <590D>
+<76D8> <76D8>
+endbfchar
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end
+endstream
+endobj
+10 0 obj
+<< /Length 1082 >>
+stream
+0.13 0.16 0.28 rg 0 600 595 242 re f
+0.63 0.57 0.98 rg 49 748 36 3 re f
+BT /C 37 Tf 1 1 1 rg 1 0 0 1 48 690 Tm <4E54793A4F8B> Tj ET
+BT /C 13 Tf 0.76 0.75 0.92 rg 1 0 0 1 50 655 Tm <6570636E520667905E08> Tj ET
+BT /H 10 Tf 0.35 0.31 0.69 rg 1 0 0 1 50 580 Tm (CANDIDATE PROFILE) Tj ET
+BT /C 13 Tf 0.18 0.20 0.30 rg 1 0 0 1 50 547 Tm <59D3540DFF1A4E54793A4F8B> Tj ET
+BT /C 13 Tf 0.18 0.20 0.30 rg 1 0 0 1 50 523 Tm <5F53524D804C4F4DFF1A6570636E520667905E08> Tj ET
+BT /C 13 Tf 0.18 0.20 0.30 rg 1 0 0 1 50 499 Tm <90AE7BB1FF1A007100690061006F002E0063006E0040006500780061006D0070006C0065002E0069006E00760061006C00690064> Tj ET
+0.88 0.89 0.94 RG 50 465 m 545 465 l S
+BT /H 10 Tf 0.35 0.31 0.69 rg 1 0 0 1 50 436 Tm (SELECTED EXPERIENCE) Tj ET
+BT /C 13 Tf 0.18 0.20 0.30 rg 1 0 0 1 50 402 Tm <67845EFA7528623775595B586570636E5E7353F0FF0C4F7F7528002000530051004C0020548C75355B508868683C3002> Tj ET
+BT /C 13 Tf 0.18 0.20 0.30 rg 1 0 0 1 50 375 Tm <53C24E0E5E02573A8C037814548C67085EA6590D76D83002> Tj ET
+BT /H 9 Tf 0.42 0.45 0.58 rg 1 0 0 1 50 48 Tm (FICTIONAL RESUMEDESK SAMPLE  /  1) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Length 294 >>
+stream
+0.92 0.91 0.99 rg 0 690 595 152 re f
+BT /H 21 Tf 0.19 0.17 0.35 rg 1 0 0 1 50 750 Tm (PROJECT NOTES) Tj ET
+BT /H 13 Tf 0.20 0.23 0.38 rg 1 0 0 1 50 650 Tm (Practice file for page navigation and zoom.) Tj ET
+BT /H 9 Tf 0.42 0.45 0.58 rg 1 0 0 1 50 48 Tm (FICTIONAL RESUMEDESK SAMPLE  /  2) Tj ET
+endstream
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000256 00000 n 
+0000000391 00000 n 
+0000000488 00000 n 
+0000000627 00000 n 
+0000000807 00000 n 
+0000000979 00000 n 
+0000001955 00000 n 
+0000003090 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+3436
+%%EOF
