@@ -6,6 +6,8 @@ mod credential;
 mod dashboard;
 mod desktop;
 mod documents;
+mod interview;
+mod interview_ai;
 mod knowledge;
 mod model;
 mod store;
@@ -20,7 +22,7 @@ mod tool_hub_tests;
 
 use std::{
     fs::File,
-    io::Read,
+    io::{Read, Write},
     path::PathBuf,
     sync::{Arc, Mutex, MutexGuard},
 };
@@ -71,6 +73,16 @@ enum Command {
     },
     Knowledge {
         operation: knowledge::Command,
+    },
+    Interview {
+        operation: interview::Command,
+    },
+    PrepareInterview {
+        selection: interview::Selection,
+        config: interview::Config,
+    },
+    DismissInterview {
+        id: String,
     },
     KnowledgeRecent,
     Dashboard,
@@ -170,6 +182,14 @@ fn dispatch_local(engine: &Engine, request: Command) -> Result<Value> {
     match request {
         Command::Todo { operation } => todo::dispatch(&mut store, operation),
         Command::Knowledge { operation } => knowledge::dispatch(&mut store, operation),
+        Command::Interview { operation } => interview::dispatch(&mut store, operation),
+        Command::PrepareInterview { selection, config } => {
+            value(interview_ai::prepare(engine, &store, selection, config)?)
+        }
+        Command::DismissInterview { id } => {
+            engine.ai_state()?.interviews.remove(&id);
+            value(())
+        }
         Command::KnowledgeRecent => value(knowledge::recent(&store)?),
         Command::Dashboard => value(store.dashboard()?),
         Command::DashboardLayout { surface } => value(dashboard::layout(&store, surface)?),
@@ -220,7 +240,11 @@ fn dispatch_local(engine: &Engine, request: Command) -> Result<Value> {
         Command::AiConsents => value(consent::preferences(&store)?),
         Command::ResetAiConsents { capability } => {
             consent::ConsentManager::new(&store.db).reset(capability)?;
-            engine.ai_state()?.invalidate_chats();
+            let mut ai = engine.ai_state()?;
+            ai.invalidate_chats();
+            if capability.is_none() || capability == Some(consent::Capability::Recruiting) {
+                ai.invalidate_interviews();
+            }
             value(consent::preferences(&store)?)
         }
         Command::WebSearchSettings => value(web_search::settings(&store)?),
@@ -471,6 +495,69 @@ async fn manage_backup(
 }
 
 #[tauri::command]
+async fn export_interview_document(
+    request: Request<'_>,
+    app: AppHandle,
+    webview: Webview,
+) -> std::result::Result<Option<String>, String> {
+    if webview.label() != "main" {
+        return Err("请从主窗口导出面试提纲。".into());
+    }
+    let InvokeBody::Raw(raw) = request.body() else {
+        return Err("缺少面试提纲文件。".into());
+    };
+    let Some((&kind, bytes)) = raw.split_first() else {
+        return Err("面试提纲文件为空。".into());
+    };
+    let (label, extension) = match kind {
+        1 if bytes.starts_with(b"%PDF-") => ("PDF 文档", "pdf"),
+        2 if bytes.starts_with(b"PK\x03\x04") => ("Word 文档", "docx"),
+        3 if std::str::from_utf8(bytes).is_ok() => ("纯文本", "txt"),
+        _ => return Err("面试提纲格式无效。".into()),
+    };
+    if bytes.is_empty() || bytes.len() > 64 * 1024 * 1024 {
+        return Err("面试提纲文件超过大小限制。".into());
+    }
+    let bytes = bytes.to_vec();
+    background(move || {
+        let Some(file) = app
+            .dialog()
+            .file()
+            .set_title("导出面试提纲")
+            .add_filter(label, &[extension])
+            .set_file_name(format!("ResumeDesk-面试提纲.{extension}"))
+            .blocking_save_file()
+        else {
+            return Ok(None);
+        };
+        let mut path = file
+            .into_path()
+            .map_err(|_| message("请选择本地文件路径。"))?;
+        if path.extension().is_none() {
+            path.set_extension(extension);
+        }
+        if !path
+            .extension()
+            .and_then(|value| value.to_str())
+            .is_some_and(|value| value.eq_ignore_ascii_case(extension))
+        {
+            return Err(message(format!("请使用 .{extension} 扩展名。")));
+        }
+        let parent = path
+            .parent()
+            .ok_or_else(|| message("请选择本地保存目录。"))?;
+        let mut output = tempfile::NamedTempFile::new_in(parent)?;
+        output.write_all(&bytes)?;
+        output.as_file().sync_all()?;
+        output.persist(&path).map_err(|error| error.error)?;
+        Ok(path
+            .file_name()
+            .map(|name| name.to_string_lossy().into_owned()))
+    })
+    .await
+}
+
+#[tauri::command]
 async fn test_ai(
     id: String,
     core: State<'_, Arc<Engine>>,
@@ -581,6 +668,7 @@ pub fn run() {
             open_knowledge,
             open_source_link,
             manage_backup,
+            export_interview_document,
             test_ai,
             cancel_ai,
             desktop::get_quick_controls,
@@ -592,6 +680,7 @@ pub fn run() {
             chat::chat_dispatch,
             chat::chat_send,
             chat::chat_cancel,
+            interview_ai::generate_interview,
         ])
         .run(tauri::generate_context!())
         .expect("Unable to launch ResumeDesk");

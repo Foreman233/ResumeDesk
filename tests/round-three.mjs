@@ -141,7 +141,7 @@ try {
     const resize = button('调整 招聘数据概览 尺寸');
     await resize.scrollIntoViewIfNeeded();
     const bounds = await resize.boundingBox();
-    const gridWidth = await page.locator('.dashboard-widgets').evaluate((element) => element.clientWidth);
+    const gridWidth = await page.getByLabel('工作台模块', { exact: true }).evaluate((element) => element.clientWidth);
     await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
     await page.mouse.down();
     await page.mouse.move(bounds.x + bounds.width / 2 + gridWidth * .28, bounds.y + bounds.height / 2 + 104, { steps: 10 });
@@ -167,7 +167,7 @@ try {
     await rpc('save_application', { id: first, stage: 'new', note: '保留的申请备注' });
     await rpc('todo', { operation: { action: 'save_rule', stage: 'screened', enabled: true } });
     await nav('候选人库').click();
-    await page.getByLabel('搜索候选人').fill(candidateName);
+    await page.getByLabel('搜索候选人', { exact: true }).fill(candidateName);
     const candidateRow = page.locator('.candidate-row').filter({ hasText: candidateName });
     await candidateRow.waitFor();
     await page.getByLabel(candidateName + ' · 选择申请岗位', { exact: true }).selectOption(String(first));
@@ -300,23 +300,24 @@ try {
     console.log('PASS local RAG without hallucinated fallback, scoped expansion consent, public query filtering, and actual HTTP with labeled web sources/errors');
 
     await nav('工作台').click();
-    await page.locator('[data-widget=knowledge]').getByText(policyName, { exact: true }).waitFor();
+    const home = page.locator('.dashboard-page');
+    await home.locator('[data-widget=knowledge]').getByText(policyName, { exact: true }).waitFor();
     await button('自定义工作台').click();
-    await button('隐藏 资料库').click(); assert.equal(await page.locator('[data-widget=knowledge]').count(), 0);
+    await button('隐藏 资料库').click(); assert.equal(await home.locator('[data-widget=knowledge]').count(), 0);
     await button('添加模块', page.locator('.dashboard-editor-toolbar')).click();
     await button('添加 资料库', dialog()).click(); await button('完成', dialog()).click();
-    await page.locator('[data-widget=knowledge]').waitFor();
+    await home.locator('[data-widget=knowledge]').waitFor();
     await page.getByLabel('招聘数据概览宽度', { exact: true }).selectOption('1');
-    const target = page.locator('[data-widget=overview]');
+    const target = home.locator('[data-widget=overview]');
     await button('移动 快捷控制中心').dragTo(target, { targetPosition: { x: 15, y: 33 } });
-    await waitFor(async () => await page.locator('[data-widget]').first().getAttribute('data-widget') === 'controls', 'drag reordered widgets');
+    await waitFor(async () => await home.locator('[data-widget]').first().getAttribute('data-widget') === 'controls', 'drag reordered widgets');
     await page.getByLabel('招聘数据概览高度', { exact: true }).selectOption('3');
     await button('隐藏 招聘岗位').click();
     await button('保存布局').click(); await button('自定义工作台').waitFor({ state: 'visible' });
     await waitFor(async () => (await rpc('dashboard_layout'))?.widgets?.[0]?.id === 'controls', 'stored layout');
-    assert.equal(await page.locator('[data-widget=jobs]').count(), 0);
+    assert.equal(await home.locator('[data-widget=jobs]').count(), 0);
     await button('自定义工作台').click(); await button('恢复默认布局').click(); await button('取消编辑').click();
-    assert.equal(await page.locator('[data-widget]').first().getAttribute('data-widget'), 'controls');
+    assert.equal(await home.locator('[data-widget]').first().getAttribute('data-widget'), 'controls');
     assert.equal(await target.getAttribute('data-width'), '1');
 
     const cdp = await context.newCDPSession(page);
@@ -324,7 +325,7 @@ try {
       for (const width of [950, 1460]) {
         await cdp.send('Emulation.setDeviceMetricsOverride', { width, height: 860, deviceScaleFactor: 1, mobile: false });
         await waitFor(async () => await page.evaluate(() => window.innerWidth) === width, 'responsive viewport');
-        const rects = await page.locator('[data-widget]').evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+        const rects = await home.locator('[data-widget]').evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
         for (let a = 0; a < rects.length; a++) {
           for (let b = a + 1; b < rects.length; b++) {
             const [x, y] = [rects[a], rects[b]];

@@ -1,0 +1,57 @@
+name: Windows Installer
+
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+
+permissions:
+  contents: read
+
+jobs:
+  installer:
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Verify the tag and application versions
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          $tauriVersion = (Get-Content src-tauri/tauri.conf.json -Raw | ConvertFrom-Json).version
+          $cargoVersion = (Select-String '^version = "([^"]+)"$' src-tauri/Cargo.toml | Select-Object -First 1).Matches[0].Groups[1].Value
+          if ($version -ne $tauriVersion -or $version -ne $cargoVersion -or $env:GITHUB_REF_NAME -cne "v$version") {
+            throw "The tag and package, Tauri and Cargo versions must agree."
+          }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Install pnpm and Rust
+        run: |
+          npm install --global pnpm@11.25.0
+          rustup toolchain install stable --profile minimal
+          rustup target add x86_64-pc-windows-msvc --toolchain stable
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Test the frontend
+        run: pnpm test
+      - name: Test the desktop backend
+        run: cargo +stable test --locked --manifest-path src-tauri/Cargo.toml
+      - name: Build the NSIS installer
+        run: pnpm tauri build --bundles nsis -- --locked
+      - name: Write the installer checksum
+        run: |
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          $installer = Get-Item -LiteralPath "src-tauri/target/release/bundle/nsis/ResumeDesk_$($version)_x64-setup.exe"
+          $sha = (Get-FileHash -LiteralPath $installer.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$sha  $($installer.Name)" | Set-Content -LiteralPath "$($installer.FullName).sha256" -Encoding ascii
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: ResumeDesk-Windows-x64
+          path: |
+            src-tauri/target/release/bundle/nsis/*_x64-setup.exe
+            src-tauri/target/release/bundle/nsis/*_x64-setup.exe.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14

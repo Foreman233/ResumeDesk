@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import {
-  ArrowDownToLine, ArrowLeft, ArrowRight, CalendarClock, ChevronLeft, ChevronRight, ExternalLink, FileText, MessageSquarePlus,
+  ArrowDownToLine, ArrowLeft, ArrowRight, CalendarClock, ChevronLeft, ChevronRight, ClipboardList, ExternalLink, FileText, MessageSquarePlus,
   FolderOpen, Mail, Maximize2, Minimize2, Pencil, Phone, Plus, Search, SlidersHorizontal, Star, Trash2, Upload, UserRound,
 } from 'lucide-react';
 import { errorText, openOriginal, PARSE_LABELS, rpc, STAGES, type CandidateDetail, type Filter, type Job, type Stage } from './api';
 import { ApplicationStageControl } from './application-stage';
 import { PdfView, showDocumentError, TextView } from './document-view';
 import { ImportDialog } from './imports';
+import type { InterviewTarget } from './interview-api';
 import { CandidateForm, LinkJob } from './recruit-forms';
 import { applicationTodoSeed, CreateTodoDialog } from './todos';
 import { Avatar, Button, Confirm, Empty, Field, Loading, Modal, Notice, PageHeading, Pill, date, fileSize, useDebounced, useResource } from './ui';
@@ -15,9 +16,10 @@ type Props = {
   initialId?: number; preset?: Filter; revision: number; jobs: Job[];
   refresh: () => void; report: (message: string, error?: boolean) => void;
   importNew: () => void; openJobs: (jobId?: number, applicationId?: number) => void;
+  openInterview: (target: InterviewTarget) => void;
 };
 
-export function Library({ initialId, preset, revision, jobs, refresh, report, importNew, openJobs }: Props) {
+export function Library({ initialId, preset, revision, jobs, refresh, report, importNew, openJobs, openInterview }: Props) {
   const [filter, setFilter] = useState<Filter>(preset ?? {});
   const query = useDebounced(filter.query ?? '');
   const [selected, setSelected] = useState(initialId);
@@ -100,7 +102,7 @@ export function Library({ initialId, preset, revision, jobs, refresh, report, im
       <section className="panel candidate-preview" aria-label="当前候选人">
         {selected !== undefined ? <CandidatePane key={selected} id={selected} jobFilter={filter.jobId} jobs={jobs} revision={revision}
           fullscreen={fullscreen} toggleFullscreen={() => setFullscreen(!fullscreen)} refresh={refresh} report={report}
-          openJobs={openJobs} removed={() => { setSelected(undefined); setFullscreen(false); }} /> :
+          openJobs={openJobs} openInterview={openInterview} removed={() => { setSelected(undefined); setFullscreen(false); }} /> :
           <Empty icon={<FileText size={29} />} title="简历预览" description="选中候选人后，可浏览简历和查看招聘记录。">
             <Button onClick={importNew}><FolderOpen size={16} />选择简历文件</Button>
           </Empty>}
@@ -110,9 +112,9 @@ export function Library({ initialId, preset, revision, jobs, refresh, report, im
   </main>;
 }
 
-function CandidatePane({ id, jobFilter, jobs, revision, fullscreen, toggleFullscreen, refresh, report, openJobs, removed }: {
+function CandidatePane({ id, jobFilter, jobs, revision, fullscreen, toggleFullscreen, refresh, report, openJobs, openInterview, removed }: {
   id: number; jobFilter?: number; jobs: Job[]; revision: number; fullscreen: boolean; toggleFullscreen: () => void;
-  refresh: () => void; report: Props['report']; openJobs: Props['openJobs']; removed: () => void;
+  refresh: () => void; report: Props['report']; openJobs: Props['openJobs']; openInterview: Props['openInterview']; removed: () => void;
 }) {
   const detail = useResource(() => rpc('candidate', { id }), [id, revision]);
   const [tab, setTab] = useState<'preview' | 'details'>('preview');
@@ -148,6 +150,8 @@ function CandidatePane({ id, jobFilter, jobs, revision, fullscreen, toggleFullsc
       <Button tone="quiet" onClick={() => setModal('note')}><MessageSquarePlus size={15} />添加备注</Button>
       <Button tone="quiet" onClick={() => setModal('todo')}><Plus size={15} />新建待办</Button>
       <Button tone="quiet" onClick={() => setModal('interview')}><CalendarClock size={15} />安排面试</Button>
+      <Button tone="quiet" onClick={() => openInterview({ fresh: true, candidateId: id, resumeId: resume?.id,
+        jobId: selectedApplication?.jobId, applicationId: selectedApplication?.id })}><ClipboardList size={15} />准备面试问题</Button>
     </div>
     <div className="tabs candidate-tabs" role="tablist" aria-label="候选人视图">
       <button role="tab" aria-selected={tab === 'preview'} onClick={() => setTab('preview')}><FileText size={15} />简历预览</button>

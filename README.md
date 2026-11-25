@@ -1,63 +1,194 @@
 # ResumeDesk
 
-ResumeDesk 是一款面向 HR 和招聘人员的 Windows 本地工作台。它把简历、岗位申请、面试待办和招聘资料放在同一个桌面应用里。基本招聘流程可离线使用，HR AI 助手可按需连接自选模型。
+面向 HR、招聘专员和猎头的 Windows 本地简历工作台。候选人、原件、招聘记录、待办和资料库都保存在本机。首次打开即可使用本地功能，使用 AI 前需在设置里配置服务。
 
-*A local-first recruiting workspace for Windows, with resume search, interview reminders, and an optional AI assistant.*
+## 主要功能
 
-[界面预览](#界面预览) · [下载 Windows 体验版](https://github.com/Foreman233/ResumeDesk/releases/tag/v1.4.0) · [Windows 验收记录](docs/validation.md)
+- 批量导入 PDF 和 DOCX，选择是否关联岗位、是否自动解析，并核对合并文件中识别出的多位候选人。
+- 搜索、筛选和预览简历。管理岗位、具体申请、招聘阶段及 HR 备注。
+- 在 HR AI 助手中进行普通问答，或授权引用选定的候选人、岗位和资料库内容。可单独配置联网搜索。
+- 使用本地资料库、面试提醒和可拖动、缩放、置顶的悬浮待办。工作台与小工具中心各自保存布局。
+- 使用面试准备工具生成、编辑和保存提纲，导出 PDF、DOCX 或 TXT。手动出题和导出可离线使用。
+- 管理本地资料，并创建或恢复加密备份。
 
-## 界面预览
+## 截图
 
-工作台集中显示候选人、招聘进展和快捷设置，小工具中心集中管理待办与资料。截图使用虚构演示数据。
+以下截图来自 Windows 桌面程序，使用虚构资料。
 
-![ResumeDesk 招聘工作台，显示候选人、岗位和快捷控制](docs/images/dashboard.png)
+![ResumeDesk 工作台](docs/images/dashboard.png)
 
-![ResumeDesk 小工具中心，显示待办和资料库卡片](docs/images/tool-hub.png)
+| 面试准备 | 悬浮待办 |
+| --- | --- |
+| ![选择候选人后编辑面试提纲](docs/images/interview-preparation.png) | ![带有单一控制栏的悬浮待办](docs/images/floating-todo.png) |
 
-## 功能
+## 安装
 
-- **简历与候选人** · 批量导入 PDF、DOCX，预览并搜索正文。导入时可关联岗位，选择自动解析，并在建档前核对从同一文件中识别出的多位候选人。
-- **岗位申请** · 管理岗位描述、招聘阶段和 HR 备注。同一位候选人可以有多条独立的岗位申请。
-- **工作台与小工具** · 自定义布局和快捷开关。管理待办、安排面试、打开置顶悬浮窗，或在本地资料库搜索文件正文。
-- **HR AI 助手** · 使用 OpenAI-compatible API 流式对话。可选择候选人、岗位和资料库片段，在确认发送范围后交给模型，并查看回答中的来源。
-- **本地数据** · 通过 SQLite 持久化资料，支持加密备份与恢复。AI 和搜索凭据由 Windows DPAPI 保护。
+从 GitHub Releases 选择 Windows x64 安装包 `ResumeDesk_<版本>_x64-setup.exe`，下载后运行。安装包为当前用户安装，并创建开始菜单入口。可在安装结束页选择是否创建桌面快捷方式。安装包未签名，Windows 可能显示安全提示。可在具备 SHA-256 文件的发行版中核对下载。 [GitHub Releases](https://github.com/Foreman233/ResumeDesk/releases)
 
-## 快速体验
+系统要求为 Windows 10 或 11 x64 和 Microsoft Edge WebView2 Runtime。直接运行版可双击打开。安装程序会在系统缺少 WebView2 时尝试下载安装运行时。 [Tauri Windows 前置要求](https://v2.tauri.app/zh-cn/start/prerequisites/) · [Windows 安装包说明](https://v2.tauri.app/distribute/windows-installer/)
 
-1. 在 Windows 10 或 11 x64 上使用 [体验版安装程序](https://github.com/Foreman233/ResumeDesk/releases/download/v1.4.0/ResumeDesk_1.4.0_x64-setup.exe)。1.4.0 安装程序未签名。
-2. 在工作台创建一个岗位，从 [`demo/`](demo/) 批量导入示例简历并关联岗位。在候选人库试试按正文搜索和预览 PDF。
-3. 在候选人详情安排面试，再打开「小工具 → 打开桌面待办」查看同一条提醒。需要体验 AI 时，可在「设置 → AI 服务」连接自己的模型供应商。
+卸载确认页提供删除应用数据的选择。要保留资料请保持该选项未选中。可先在「设置 → 本地数据」创建加密备份。
 
-## 从源码运行与构建
+## 使用
 
-准备 Node.js 24、pnpm 11.25.0、Rust stable 的 MSVC 工具链、Visual Studio Build Tools 的「使用 C++ 的桌面开发」工作负载和 Microsoft Edge WebView2 Runtime。具体组件见 [Tauri Windows 前置要求](https://v2.tauri.app/zh-cn/start/prerequisites/)。
+1. 在工作台点「导入简历」，也可以把文件拖入工作台或候选人库。选择是否关联岗位和自动解析，再点「核对导入」。自动解析会按可以识别的姓名字段或分页边界提出候选人档案。可逐个修正或排除，再确认建档。关闭自动解析时可手动填写一份候选人档案，程序保留原件。在候选人详情中点「添加简历」可给同一人补充其他版本。
+2. 在候选人库按姓名、原件文字、岗位、标签、收藏和招聘阶段搜索。PDF 可在软件内翻页、缩放、适应宽度和最大化。DOCX 显示提取文字并可通过系统程序打开原件。
+3. 在岗位管理中建立岗位、关联候选人、填写阶段和 HR 备注。从候选人详情点岗位名称可直接进入对应申请。
+4. 候选人列表和简历预览顶部可直接修改招聘状态。多个岗位时先选申请，在按岗位筛选的列表里直接改当前岗位。预览顶部也可添加备注、收藏、创建待办或安排面试。
+5. 打开「小工具」使用待办、资料库和面试准备。点卡片上的「展开」进入完整工作区。
+6. 在「设置 → 本地数据」创建加密备份、恢复资料库或设置清理提醒。工作台的快捷控制中心可切换 AI、发送确认、通知、面试提醒和悬浮待办。
+7. 分别在工作台和小工具中心编辑模块布局。两页拥有各自的顺序、尺寸和显示设置。
 
-在仓库根目录打开 PowerShell。
+`demo/` 内有四份两页 PDF 和一份 DOCX，可用于测试简历导入、正文检索和预览。姓名、经历和邮件地址均为虚构。首次启动建立空白资料库，由使用者手动导入演示文件。也可运行 `pnpm demo:files` 生成独立副本。
+
+## Windows 开发环境
+
+- Windows 10 或 11 x64，Microsoft Edge WebView2 Runtime。
+- Node.js 24 和 pnpm 11.25.0。Node.js 22 需至少 22.13。
+- Rust stable 的 `x86_64-pc-windows-msvc` 工具链，以及 Visual Studio Build Tools 的「使用 C++ 的桌面开发」工作负载、MSVC x64 和 Windows SDK。
+
+在源码根目录的 PowerShell 中运行以下命令。
 
 ```powershell
 pnpm install --frozen-lockfile
 pnpm tauri dev
 ```
 
-执行 `pnpm tauri build` 生成 EXE 和 NSIS 安装程序，默认输出到 `src-tauri/target/release/` 及其中的 `bundle/nsis/`。仅生成 EXE 时使用 `pnpm tauri build --no-bundle`。
-
-## 开发与测试
-
-| 路径 | 内容 |
-| --- | --- |
-| [`src/`](src/) | React、TypeScript 和 Vite 桌面界面 |
-| [`src-tauri/`](src-tauri/) | Tauri 2、Rust 后端、SQLite 迁移和原生桌面能力 |
-| [`tests/`](tests/) | 示例文件和 Windows 桌面验收脚本 |
+构建直接运行版和当前用户安装包。
 
 ```powershell
+pnpm tauri build --bundles nsis -- --locked
+```
+
+默认输出位置为 `src-tauri/target/release/resumedesk.exe` 和 `src-tauri/target/release/bundle/nsis/`。仅构建 EXE 时使用 `pnpm tauri build --no-bundle`。首次安装开发依赖和打包工具需要网络。若发布给其他 Windows 用户，可使用自己的 Authenticode 证书签名。
+
+## GitHub 维护与发布
+
+仓库存放源码、锁文件、迁移、文档和虚构演示文件。下载用的安装包和对应 SHA-256 文件放在 GitHub Releases。Windows CI 在推送分支和 Pull Request 时执行类型检查、构建与测试。`vX.Y.Z` 标签触发独立的 Windows 安装包工作流，并校验前端、Tauri、Cargo 与标签版本一致。安装包作为 Actions 构建产物供维护者下载，公开发行由维护者手动创建。
+
+主项目尚未选择公开许可证。第三方依赖及随包资源依据各自的许可证分发。依赖锁文件更新后，请运行 `pnpm notices` 更新授权声明。 [第三方声明](THIRD_PARTY_NOTICES.txt) · [版本记录](CHANGELOG.md)
+
+## 代码和数据
+
+| 位置 | 内容 |
+| --- | --- |
+| `src/` | React、TypeScript、Vite、Tailwind、Radix Dialog。各页面通过类型化 IPC 调用桌面后端。 |
+| `src-tauri/src/store.rs` | SQLite 连接、迁移、本地搜索、档案、岗位、申请与备注。 |
+| `src-tauri/src/documents.rs` | 导入验证、SHA-256 去重、附件存储、DOCX 提取、联系方式识别。PDF 文字提取与渲染使用本地 PDF.js。 |
+| `src-tauri/src/ai.rs` | Chat Completions、连接测试、流式输出、脱敏与请求取消。 |
+| `src-tauri/src/credential.rs` | 当前 Windows 账户的 DPAPI 凭据保护。 |
+| `src-tauri/src/backup.rs` | age 口令加密、完整性校验和资料库替换。 |
+| `src-tauri/src/todo.rs`、`desktop.rs` | 待办与招聘关系、提醒调度、原生悬浮窗及托盘。 |
+| `src-tauri/src/chat.rs`、`src/chat.tsx` | 本地会话、逐轮数据授权及聊天界面。 |
+| `src-tauri/src/consent.rs`、`web_search.rs` | 发送范围授权与独立的 Brave 兼容搜索服务。 |
+| `src-tauri/src/knowledge.rs`、`src/knowledge.tsx` | 资料文件管理、带位置的正文索引及本地检索。 |
+| `src-tauri/src/dashboard.rs`、`src/widget-layout.tsx` | 工作台和小工具中心共用的布局版本、编辑器及存储接口。 |
+| `src/widget-hub.tsx` | 小工具注册表、摘要卡片及页内展开视图。 |
+| `src/interview*.ts*` | 候选人与岗位选择、提纲编辑、授权预览和本地文件导出。 |
+| `src-tauri/src/interview.rs`、`interview_ai.rs` | 本地提纲、SQLite 关联校验、发送范围授权及模型输出校验。 |
+| `src-tauri/migrations/` | 按 `PRAGMA user_version` 顺序执行的 SQLite 迁移。 |
+| `tests/`、`demo/` | 虚构材料生成器和原生 WebView2 自动化验收。 |
+
+默认数据目录是 `%LOCALAPPDATA%\com.resumedesk.desktop`。`workspace\workspace.sqlite3` 保存资料，`workspace\attachments` 保存按 SHA-256 命名的原件。数据库记录原始文件名、格式、导入时间、摘要值和字节数。测试可用绝对路径的 `RESUMEDESK_DATA_DIR` 指定独立目录。
+
+`candidates` 与 `resumes` 一对多。`applications` 对候选人与岗位组合设唯一约束，每条申请独立保存招聘阶段和备注。`tags`、`candidate_tags` 及 `notes` 保存候选人信息。`app_settings` 保存非敏感偏好。迁移 010 增加小工具布局和资料使用记录。迁移 011 增加面试提纲、按顺序保存的题目与面试记录，并在已有工具布局末尾加入面试准备。聊天继续保留已保存消息，同范围的近期对话可作为后续聊天上下文。
+
+1.4 停用岗位解析、样例技能统计、本地及 AI 岗位画像、画像编辑和版本历史。升级保留这些历史表、证据及原件，并让旧工作台布局跳过已停用的模块。招聘岗位、JD 和候选人申请继续在岗位管理使用。加密备份包括历史资料。手动删除岗位或候选人时，应用仍按现有的来源关联规则清理相关记录。
+
+原件还被其他记录引用时会继续保留。外部程序占用的附件在文件释放后可于下次启动清理。已创建的加密备份是独立副本。设置中的保留期限根据最后活动时间提示清理，由 HR 选择删除。
+
+一份合并文件可对应多位候选人。SQLite 会分别保存候选人的字段、检索文本和岗位申请，原件按哈希只保留一份。自动拆分需要文件含有可读文字和可辨识的分界，建议确认时核对人数和姓名。识别范围受原件版式和文字内容影响。
+
+加密备份使用 age 的口令模式。备份包含 SQLite、简历和资料库原件。恢复前会校验口令、数据库、附件哈希和数据库与附件的对应关系。口令须为 10 至 200 字符，单个备份上限为 4 GiB，数据库上限为 768 MiB。模型和搜索凭据保留在本机 Windows 凭据文件中。1.5 可恢复旧版备份。由 1.5 创建的备份需要 1.5 或更新版本。[age 加密格式](https://age-encryption.org/v1)
+
+## AI 服务配置
+
+进入「设置 → AI 服务」，填写供应商的 Base URL、文本模型名称、超时和 API Key。若地址以 `/v1` 结尾，程序会发送到 `/v1/chat/completions`，也接受完整的 `/chat/completions` 地址。远程服务需要 HTTPS，本机测试服务可使用回环 HTTP。完成独立的连接测试后可使用 HR AI 助手。
+
+请求超时默认为 120 秒，可配置为 5 至 600 秒。程序会为支持的 DeepSeek 官方模型关闭深度思考。已保存的模型、端点和凭据可继续使用。[DeepSeek 思考模式](https://api-docs.deepseek.com/guides/thinking_mode/)
+
+API Key 通过 Windows DPAPI 加密，以当前账户为边界，与服务地址绑定。应用界面只读回配置和凭据状态。更换服务地址时需重填 Key。非敏感的 API 设置会随数据库备份，恢复到新账户时可重新输入 Key。
+
+供应商需支持 Bearer API Key 和标准 Chat Completions 文本响应。开启候选人数据后可选择岗位及其 JD。选定的资料可在发送前核对和编辑，招聘阶段只在申请记录中由 HR 修改。
+
+## 小工具中心
+
+「小工具」在同一页显示待办事项、资料库和面试准备。待办卡片列出今日、即将到期和逾期条目，可直接创建或完成任务，也可打开原生桌面待办。资料库卡片可直接上传、搜索正文、浏览分类及最近使用的文件，或把已授权文件带入 HR AI 助手。面试准备卡片可快速选择候选人、创建提纲或打开近期保存的提纲。
+
+「展开」会在当前页面打开完整工具工作区。工作台和聊天引用的快捷入口也会在这里打开对应任务或文件。从展开视图返回时，卡片和工作区的搜索、筛选及布局仍可继续使用。
+
+用「管理小工具」搜索可用模块，调整显示状态并保存。用「自定义布局」拖动排序、调整宽高或切换显示。顶栏的「恢复默认布局」直接应用小工具的初始排列。隐藏待办卡片仅影响显示，提醒继续由应用后台调度。
+
+新增工具可在注册表填写稳定 ID、分类、默认和最小尺寸，再提供摘要与展开组件。布局接口接受注册的工具 ID。摘要独立读取必要字段，展开时读取详细数据。
+
+## 面试准备
+
+从小工具中心展开「面试准备」，或在候选人页面点「准备面试问题」。可以指定简历版本，选择一条已关联申请、其他已保存岗位，或填写临时岗位名称和 JD。有多条申请时，请选择本次面试对应的记录。
+
+设置 1–50 道题、题目类型与分配、难度及中英文。可提供参考时长和关注重点，并开启追问、考察要点和参考思路。生成使用已连接验证的模型。程序先移除识别到的姓名和联系方式，再显示所发送的选定文本。全局「AI 发送前始终确认」关闭时，可以记住同一模型、简历版本和资料内容的发送授权。资料范围变化后会重新确认。
+
+生成结果先进入编辑区。保存前可编辑、添加、删除、拖动或用上移下移按钮排序。模型返回不完整或重复时，会显示实际取得的题量，并提供补充和重新生成入口。引用在发送的原文片段中核对，问题是否与引用相符由面试官审核。手动出题、面试记录和导出均在本地完成。
+
+历史支持按候选人、岗位和名称查询。复制提纲会带入题目，面试记录留空。候选人删除时，其面试提纲会一并删除。岗位、原件或申请移除后，提纲保留已保存的内容和其余仍有效的关联。面试提纲包含在加密备份中。
+
+可在编辑区导出 PDF、DOCX 或 TXT。详细版包含依据、追问、考察项和已有记录，简洁版保留题目和空白记录区。候选人姓名默认隐藏，面试日期可选择显示。PDF 采用适合打印的 A4 图像分页，需复制或检索文字时可选择 DOCX 或 TXT。
+
+## 待办、面试提醒与悬浮窗
+
+在「小工具」新建待办，或从候选人详情、岗位和具体岗位申请中创建关联任务。展开待办可编辑、完成、取消或删除。面试支持本地时间、线上会议链接或线下地点以及自定义提前提醒。招聘阶段变化时会给出建议。阶段规则需手动开启，同一申请在同一规则下最多自动产生一项待办。
+
+悬浮待办使用独立 Windows 窗口，可以拖动标题栏、调整大小、置顶、最小化和隐藏。位置、大小和置顶选项保存在 SQLite。显示器不可用时，窗口会在下次显示时移回可用屏幕。两窗口共享待办和刷新事件。
+
+面试日期按录入时的本地时间转换为 UTC 保存，展示时用系统当前时区。后台调度会定期检查提醒，支持重启后补检。开启通知时，Windows 提醒只显示到期条数。关闭桌面通知后，面试提醒仍可在可见主窗口内显示。在完整设置中开启「关闭主窗口后在托盘运行」，关主窗口会留在托盘。「退出 ResumeDesk」会结束进程并停止提醒。Windows 通知推荐使用安装版并允许 Windows 应用通知。[Tauri 原生通知](https://v2.tauri.app/plugin/notification/)
+
+## HR AI 助手
+
+聊天输入区可以独立开启候选人数据、本地资料库和联网搜索。普通对话只发送你输入的问题及所选的同范围近期历史。选定候选人或岗位时，可预览和编辑拟发送的资料片段。
+
+首次使用某个发送范围需确认。勾选「不再提示」并完成发送后，程序记住该服务和范围。切换服务、增添资料或开启新能力时需再次确认。候选人资料及高风险文本仍会逐次显示核对弹窗。可在「设置 → AI 服务 → 隐私与授权」逐项恢复确认或清除全部授权。工作台开启「AI 发送前始终确认」也会清除已记住的范围。
+
+支持流式回答、Markdown 和表格、取消、复制、重命名、清空记录和删除会话。引用编号对应本次已确认的资料。回答用于整理与核实，招聘状态等操作仍由 HR 在相应页面执行。聊天历史保存在本机，关闭 AI 后普通本地功能继续可用。
+
+### 资料库检索
+
+支持 PDF、DOCX、TXT、Markdown、CSV。上传时可选择分类，上传后可重命名、移分类、加标签以及记录地区、发布机构、发布与生效日期、失效日期和来源网址。文字文件支持 UTF‑8 和带 BOM 的 UTF‑16。扫描件和文字提取失败的文件保留原件，并显示索引状态。
+
+资料默认仅本地使用。为文件开启「允许 AI 引用这份资料」后，可从文件详情点「询问此资料」，或在聊天里指定文件。检索在 SQLite 本地完成，最多选取六个相关片段。回答下方的来源保留证据和文件入口，PDF 页码使用实际提取页。纯资料查询无命中时由本机提示缺少依据。替换原件会重建索引和撤销该文件的引用权限。删除或替换原件还会移除引用旧内容的聊天会话。
+
+### 联网搜索
+
+在「设置 → AI 服务 → 联网搜索」填写 Brave Web Search 或兼容端点、搜索 API Key 和超时。搜索使用独立的 Windows DPAPI 加密凭据。聊天默认关闭联网搜索，模型请求仍使用你配置的 AI API。[Brave Web Search API](https://api-dashboard.search.brave.com/app/documentation/web-search/get-started)
+
+需要实时信息时开启「联网搜索」，单独填写公开搜索词。搜索端点只收到这条搜索词，程序会在本机拦截识别到的候选人姓名和联系方式。程序取回并清理搜索摘要，优先展示识别出的政府域名。回答列出网页链接和检索时间，可同时引用本地历史资料。搜索摘要可能不足以确认政策仍然有效，需打开原始发布来源核对。搜索服务未配置或连接失败时界面会显示原因。
+
+### 工作台布局
+
+在编辑模式拖动手柄改变模块顺序，或聚焦手柄后用方向键移动。右下角手柄可调整宽度和高度，也可使用下拉菜单。小、中、大分别对应四分之一、半行和整行，窄窗口会重新折行。可隐藏模块并从模块库重新添加，布局只影响首页显示。编辑取消时恢复原布局，恢复默认后点「保存布局」即可应用。
+
+## 测试
+
+```powershell
+pnpm typecheck
 pnpm build
 pnpm test
-cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
+cargo check --locked --manifest-path src-tauri/Cargo.toml
 cargo test --locked --manifest-path src-tauri/Cargo.toml
 ```
 
-[Windows CI](.github/workflows/windows-ci.yml) 会在推送和拉取请求时运行这些检查。原生界面、备份和升级的测试方式及验证范围见 [使用与开发指南](docs/guide.md) 和 [Windows 验收记录](docs/validation.md)。
+原生界面测试使用开发构建和独立资料目录。测试会启动两个连续的 Windows 进程，通过本机回环模拟 API，验证重启保留和 AI 安全流程。
 
-## 使用范围
+```powershell
+pnpm build
+cargo build --locked --manifest-path src-tauri/Cargo.toml --features custom-protocol,desktop-test
+.\tests\desktop.ps1
+```
 
-当前版本用于 Windows 单机单用户场景。扫描版 PDF 可以预览，文字检索依赖文件里已有的文本层。最小化或留在系统托盘时，应用仍可调度面试提醒。完全退出进程后，提醒停止，未处理提醒会在下次启动时补检。
+也可传入 `-Executable` 和 `-TestRoot` 指定程序与测试目录。详细的实际结果及当前限制见 [验收记录](VALIDATION.md)。
+
+加上 `-Extended` 可同时验证悬浮待办、AI 聊天、资料库、工作台及小工具中心的独立布局，以及面试提纲编辑、生成、补题和重启读回。开发构建使用独立验收目录，模型与搜索接口走本机模拟服务。
+
+## 当前范围
+
+面试提纲的 PDF 为图像分页。若需复制或检索文字，可导出 DOCX 或 TXT。悬浮待办与提醒依赖应用进程，退出进程后提醒会在下一次启动时补查。窗口兼容性复验步骤见 [发布报告](docs/release-1.5.1.md)。
+
+扫描 PDF 的原件可预览，目前没有 OCR。资料库暂未支持 XLSX。DOCX 文字预览提取正文文字，原始版式由系统关联程序展示。密码保护的 PDF 可保留原件，输入密码需使用关联程序。单件文件上限 25 MiB，PDF 提取至前 100 页和 18 万字符内。资料库使用本地关键词检索和中文子串匹配。联网结果使用搜索服务提供的摘要。自动开机启动尚未提供。当前版本适用单机单用户场景。

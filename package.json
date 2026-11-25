@@ -1,15 +1,17 @@
 {
   "name": "resumedesk",
-  "version": "1.4.0",
+  "version": "1.5.1",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.25.0",
   "engines": { "node": ">=22.13.0" },
   "scripts": {
     "dev": "vite",
+    "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit && vite build",
     "tauri": "tauri",
-    "test": "node tests/fixtures.test.mjs",
+    "test": "node tests/fixtures.test.mjs && node tests/interview-export.test.mjs",
+    "notices": "node scripts/third-party-notices.mjs",
     "demo:files": "node tests/make-fixtures.mjs",
     "test:desktop": "powershell -NoProfile -File tests/desktop.ps1"
   },

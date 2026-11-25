@@ -10,8 +10,8 @@ use std::{
 use rusqlite::{OptionalExtension, params};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use tauri::{
-    AppHandle, Emitter, LogicalSize, Manager, PhysicalPosition, Position, Size, WebviewUrl,
-    WebviewWindow, WebviewWindowBuilder, Window, WindowEvent,
+    AppHandle, Emitter, LogicalSize, Manager, PhysicalPosition, PhysicalRect, PhysicalSize,
+    Position, Size, WebviewUrl, WebviewWindow, WebviewWindowBuilder, Window, WindowEvent,
     menu::{Menu, MenuItem},
     tray::TrayIconBuilder,
 };
@@ -26,6 +26,10 @@ use crate::{
 
 pub const QUICK_CHANGED: &str = "resumedesk-quick-changed";
 pub const TODOS_CHANGED: &str = "todos-changed";
+
+const WIDGET_DEFAULT_WIDTH: f64 = 340.0;
+const WIDGET_DEFAULT_HEIGHT: f64 = 450.0;
+const WIDGET_MIN_SIZE: f64 = 280.0;
 
 #[derive(Default)]
 pub struct DesktopRuntime {
@@ -236,62 +240,97 @@ fn create_widget(app: &AppHandle, core: &Engine) -> Result<WebviewWindow> {
     )
     .title("ResumeDesk · 悬浮待办")
     .data_directory(PathBuf::from(display_path(&root.join("webview"))))
-    .inner_size(340.0, 450.0)
-    .min_inner_size(280.0, 280.0)
+    .inner_size(WIDGET_DEFAULT_WIDTH, WIDGET_DEFAULT_HEIGHT)
+    .min_inner_size(WIDGET_MIN_SIZE, WIDGET_MIN_SIZE)
+    .decorations(false)
+    .shadow(true)
     .resizable(true)
+    .maximizable(false)
     .visible(false)
     .always_on_top(settings.always_on_top)
     .build()
     .map_err(|_| message("无法创建悬浮待办窗口。请检查 WebView2 是否可用。"))
 }
 
+fn work_area_contains(area: &PhysicalRect<i32, u32>, point: Placement) -> bool {
+    let x = i64::from(point.x) - i64::from(area.position.x);
+    let y = i64::from(point.y) - i64::from(area.position.y);
+    (0..i64::from(area.size.width)).contains(&x) && (0..i64::from(area.size.height)).contains(&y)
+}
+
+fn widget_bounds(
+    area: &PhysicalRect<i32, u32>,
+    scale: f64,
+    frame: PhysicalSize<u32>,
+    saved: Option<Placement>,
+) -> (PhysicalPosition<i32>, PhysicalSize<u32>) {
+    let minimum = LogicalSize::new(WIDGET_MIN_SIZE, WIDGET_MIN_SIZE).to_physical::<u32>(scale);
+    let preferred = saved
+        .map(|point| LogicalSize::new(point.width, point.height))
+        .unwrap_or_else(|| LogicalSize::new(WIDGET_DEFAULT_WIDTH, WIDGET_DEFAULT_HEIGHT))
+        .to_physical::<u32>(scale);
+    let available_width = area.size.width.saturating_sub(frame.width);
+    let available_height = area.size.height.saturating_sub(frame.height);
+    let width = preferred
+        .width
+        .clamp(minimum.width, available_width.max(minimum.width));
+    let height = preferred
+        .height
+        .clamp(minimum.height, available_height.max(minimum.height));
+    let room_x = available_width.saturating_sub(width);
+    let room_y = available_height.saturating_sub(height);
+    let max_x = area.position.x.saturating_add(room_x as i32);
+    let max_y = area.position.y.saturating_add(room_y as i32);
+    let position = if let Some(point) = saved.filter(|point| work_area_contains(area, *point)) {
+        PhysicalPosition::new(
+            point.x.clamp(area.position.x, max_x),
+            point.y.clamp(area.position.y, max_y),
+        )
+    } else {
+        let margin = LogicalSize::new(16.0, 30.0).to_physical::<u32>(scale);
+        PhysicalPosition::new(
+            max_x.saturating_sub(margin.width.min(room_x) as i32),
+            area.position
+                .y
+                .saturating_add(margin.height.min(room_y) as i32),
+        )
+    };
+    (position, PhysicalSize::new(width, height))
+}
+
 fn place_widget(window: &WebviewWindow, saved: Option<Placement>) -> Result<()> {
     let all = window
         .available_monitors()
         .map_err(|_| message("无法读取显示器布局。"))?;
-    let contains = |monitor: &tauri::Monitor, point: Placement| {
-        let area = monitor.work_area();
-        let left = i64::from(area.position.x);
-        let top = i64::from(area.position.y);
-        (left..left + i64::from(area.size.width)).contains(&i64::from(point.x))
-            && (top..top + i64::from(area.size.height)).contains(&i64::from(point.y))
-    };
-    let known = saved.and_then(|point| all.iter().find(|monitor| contains(monitor, point)));
+    let known = saved.and_then(|point| {
+        all.iter()
+            .find(|monitor| work_area_contains(monitor.work_area(), point))
+    });
     let primary = window.primary_monitor().ok().flatten();
     let Some(monitor) = known.or(primary.as_ref()).or(all.first()) else {
         return Ok(());
     };
-    let area = monitor.work_area();
-    let scale = monitor.scale_factor().max(0.5);
-    let width = saved
-        .map_or(340.0, |p| p.width.clamp(280.0, 950.0))
-        .min((f64::from(area.size.width) / scale - 15.0).max(280.0));
-    let height = saved
-        .map_or(450.0, |p| p.height.clamp(280.0, 1100.0))
-        .min((f64::from(area.size.height) / scale - 65.0).max(280.0));
-    let right = area.position.x.saturating_add(area.size.width as i32);
-    let bottom = area.position.y.saturating_add(area.size.height as i32);
-    let max_x = area
-        .position
-        .x
-        .max(right.saturating_sub((width * scale) as i32 + 16));
-    let max_y = area
-        .position
-        .y
-        .max(bottom.saturating_sub(((height + 48.0) * scale) as i32));
-    let x = saved
-        .filter(|_| known.is_some())
-        .map_or(max_x, |p| p.x.clamp(area.position.x, max_x));
-    let y = saved
-        .filter(|_| known.is_some())
-        .map_or(area.position.y.saturating_add(30).min(max_y), |p| {
-            p.y.clamp(area.position.y, max_y)
-        });
+    let scale = monitor.scale_factor();
+    let frame = match (
+        window.outer_size(),
+        window.inner_size(),
+        window.scale_factor(),
+    ) {
+        (Ok(outer), Ok(inner), Ok(current_scale)) => PhysicalSize::new(
+            outer.width.saturating_sub(inner.width),
+            outer.height.saturating_sub(inner.height),
+        )
+        .to_logical::<f64>(current_scale)
+        .to_physical::<u32>(scale),
+        _ => PhysicalSize::new(0, 0),
+    };
+    // Apply the target monitor's DPI even when the window is still on the old monitor.
+    let (position, size) = widget_bounds(monitor.work_area(), scale, frame, saved);
     window
-        .set_position(Position::Physical(PhysicalPosition::new(x, y)))
+        .set_position(Position::Physical(position))
         .map_err(|_| message("无法设置悬浮窗口位置。"))?;
     window
-        .set_size(Size::Logical(LogicalSize::new(width, height)))
+        .set_size(Size::Physical(size))
         .map_err(|_| message("无法设置悬浮窗口大小。"))?;
     Ok(())
 }
@@ -655,6 +694,48 @@ fn dispatch_reminders(app: &AppHandle, core: &Engine) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn widget_restores_client_size_at_target_dpi_and_clamps_to_the_work_area() {
+        let area = PhysicalRect {
+            position: PhysicalPosition::new(-1920, -80),
+            size: PhysicalSize::new(1920, 1100),
+        };
+        let saved = Placement {
+            x: -40,
+            y: 990,
+            width: 400.0,
+            height: 500.0,
+        };
+        for (scale, width, height) in [(1.0, 400, 500), (1.25, 500, 625), (1.5, 600, 750)] {
+            let frame = PhysicalSize::new(12, 10);
+            let (position, size) = widget_bounds(&area, scale, frame, Some(saved));
+            assert_eq!(size, PhysicalSize::new(width, height));
+            assert_eq!(
+                position,
+                PhysicalPosition::new(-(width as i32) - 12, 1010 - height as i32),
+            );
+        }
+    }
+
+    #[test]
+    fn widget_recovers_when_the_original_monitor_disappears() {
+        let area = PhysicalRect {
+            position: PhysicalPosition::new(0, 40),
+            size: PhysicalSize::new(1280, 720),
+        };
+        let saved = Placement {
+            x: -1900,
+            y: 220,
+            width: 1150.0,
+            height: 100.0,
+        };
+        let frame = PhysicalSize::new(2, 2);
+        assert!(!work_area_contains(&area, saved));
+        let (position, size) = widget_bounds(&area, 1.5, frame, Some(saved));
+        assert_eq!(position, PhysicalPosition::new(0, 85));
+        assert_eq!(size, PhysicalSize::new(1278, 420));
+    }
 
     #[test]
     fn quick_controls_are_shared_and_ai_gate_survives_reopen() {

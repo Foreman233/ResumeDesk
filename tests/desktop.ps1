@@ -32,11 +32,17 @@ foreach ($rdPart in @('first','restart')) {
                     node (Join-Path $PSScriptRoot $extension) $rdEndpoint $rdTest
                     if ($LASTEXITCODE -ne 0) { throw "Desktop verification failed: $extension" }
                 }
+                node (Join-Path $PSScriptRoot 'interview-preparation.mjs') first $rdEndpoint $rdTest
+                if ($LASTEXITCODE -ne 0) { throw 'Interview preparation verification failed' }
             }
             node (Join-Path $PSScriptRoot 'round-three.mjs') $rdPart $rdEndpoint $rdTest
             if ($LASTEXITCODE -ne 0) { throw "Round-three verification failed: $rdPart" }
             node (Join-Path $PSScriptRoot 'tool-hub.mjs') $rdPart $rdEndpoint $rdTest
             if ($LASTEXITCODE -ne 0) { throw "Tool Hub verification failed: $rdPart" }
+            if ($rdPart -eq 'restart') {
+                node (Join-Path $PSScriptRoot 'interview-preparation.mjs') restart $rdEndpoint $rdTest
+                if ($LASTEXITCODE -ne 0) { throw 'Interview preparation restart verification failed' }
+            }
         }
     } finally {
         if (!$rdProcess.HasExited) {

@@ -14,6 +14,7 @@
     "allow-open-knowledge",
     "allow-open-source-link",
     "allow-manage-backup",
+    "allow-export-interview-document",
     "allow-test-ai",
     "allow-cancel-ai",
     "core:event:default",
@@ -25,6 +26,7 @@
     "allow-navigate-main",
     "allow-chat-dispatch",
     "allow-chat-send",
-    "allow-chat-cancel"
+    "allow-chat-cancel",
+    "allow-generate-interview"
   ]
 }

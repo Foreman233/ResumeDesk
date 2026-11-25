@@ -28,11 +28,13 @@
 
 .todo-widget { height: 100vh; min-height: 160px; display: flex; flex-direction: column; background: #fbfbfe; color: #202940; }
 .todo-widget-header, .todo-widget-toolbar, .todo-widget-footer { display: flex; justify-content: space-between; align-items: center; }
-.todo-widget-header { gap: 5px; min-height: 46px; padding: 5px 8px 5px 11px; border-bottom: 1px solid #e6e8f3; background: #ffffff; }
+.todo-widget-header { flex-shrink: 0; gap: 5px; min-height: 46px; padding: 5px 8px 5px 11px; border-bottom: 1px solid #e6e8f3; background: #ffffff; }
 .todo-widget-header > div { display: flex; align-items: center; gap: 6px; }
-.todo-widget-header h1 { margin: 0; font-size: 15px; font-weight: 700; white-space: nowrap; }
-.todo-widget-icon { display: grid; place-items: center; width: 28px; height: 28px; color: #4c43cd; background: #f0eefe; border-radius: 8px; }
-.todo-widget-header .inline-actions { gap: 1px; }
+.todo-widget-title { flex: 1; min-width: 0; align-self: stretch; cursor: grab; user-select: none; app-region: drag; }
+.todo-widget-title:active { cursor: grabbing; }
+.todo-widget-header h1 { margin: 0; font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.todo-widget-icon { display: grid; flex: none; place-items: center; width: 28px; height: 28px; color: #4c43cd; background: #f0eefe; border-radius: 8px; }
+.todo-widget-header .inline-actions { flex: none; gap: 1px; app-region: no-drag; }
 .todo-widget .icon-btn { width: 30px; height: 30px; min-width: 30px; min-height: 30px; padding: 0; }
 .todo-widget .icon-btn[aria-pressed=true] { color: #4136c7; background: #ebe8fe; }
 .todo-widget-toolbar { padding: 4px 11px; border-bottom: 1px solid #edf0f7; }

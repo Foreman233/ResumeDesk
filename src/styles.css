@@ -89,6 +89,7 @@ small { font-size: 12px; }
 .breadcrumb strong { color: #363d57; }
 .top-local { color: #55627a; gap: 6px; }
 .page-slot { flex: 1; min-height: 0; min-width: 0; }
+.page-slot[hidden] { display: none; }
 .page { height: 100%; min-height: 0; padding: 25px 27px 29px; }
 .scroll-page { overflow: auto; }
 .page-heading { display: flex; gap: 14px; justify-content: space-between; align-items: flex-start; margin-bottom: 23px; }

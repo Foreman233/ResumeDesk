@@ -1,6 +1,6 @@
 [package]
 name = "resumedesk"
-version = "1.4.0"
+version = "1.5.1"
 description = "ResumeDesk 本地简历工作台"
 edition = "2024"
 rust-version = "1.91"

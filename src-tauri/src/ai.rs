@@ -226,12 +226,21 @@ pub struct AiState {
     running: Option<(String, CancellationToken)>,
     pub(crate) chats: HashMap<String, crate::chat::PreparedChat>,
     pub(crate) active_chat: Option<(String, i64)>,
+    pub(crate) interviews: HashMap<String, crate::interview_ai::Prepared>,
+    pub(crate) active_interview: Option<String>,
 }
 
 impl AiState {
     pub fn invalidate_chats(&mut self) {
         self.chats.clear();
         if let Some((request, _)) = &self.active_chat {
+            self.cancel(request);
+        }
+    }
+
+    pub fn invalidate_interviews(&mut self) {
+        self.interviews.clear();
+        if let Some(request) = &self.active_interview {
             self.cancel(request);
         }
     }
@@ -271,10 +280,14 @@ impl AiState {
         {
             self.active_chat = None;
         }
+        if self.active_interview.as_deref() == Some(id) {
+            self.active_interview = None;
+        }
     }
 
     pub fn invalidate(&mut self) {
         self.chats.clear();
+        self.interviews.clear();
         if let Some((_, token)) = &self.running {
             token.cancel();
         }
@@ -364,6 +377,7 @@ pub struct ChatCompletions;
 enum ChatPurpose {
     Test,
     Assistant,
+    Interview,
 }
 
 fn chat_options(config: &ConnectionSettings, purpose: ChatPurpose) -> serde_json::Value {
@@ -384,6 +398,7 @@ fn chat_options(config: &ConnectionSettings, purpose: ChatPurpose) -> serde_json
         match purpose {
             ChatPurpose::Test => options["max_tokens"] = serde_json::json!(32),
             ChatPurpose::Assistant => options["max_tokens"] = serde_json::json!(3000),
+            ChatPurpose::Interview => options["max_tokens"] = serde_json::json!(6000),
         }
     }
     options
@@ -416,6 +431,33 @@ impl ChatCompletions {
         request["messages"] =
             serde_json::json!([{"role":"system","content":system}, {"role":"user","content":user}]);
         let response = self.post_request(config, &request).await?;
+        Self::read_completion(config, response).await
+    }
+
+    pub(crate) async fn interview(
+        &self,
+        config: &ConnectionSettings,
+        system: &str,
+        user: &str,
+    ) -> Result<String> {
+        let mut request = chat_options(config, ChatPurpose::Interview);
+        request["model"] = serde_json::json!(config.public.model);
+        request["messages"] =
+            serde_json::json!([{"role":"system","content":system}, {"role":"user","content":user}]);
+        request["response_format"] = serde_json::json!({ "type": "json_object" });
+        let mut response = self.post_request(config, &request).await?;
+        if matches!(
+            response.status(),
+            StatusCode::BAD_REQUEST
+                | StatusCode::UNSUPPORTED_MEDIA_TYPE
+                | StatusCode::UNPROCESSABLE_ENTITY
+        ) {
+            request
+                .as_object_mut()
+                .expect("Chat Completions request object")
+                .remove("response_format");
+            response = self.post_request(config, &request).await?;
+        }
         Self::read_completion(config, response).await
     }
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 import { ArrowUpRight, Bell, CalendarClock, Check, ClipboardCheck, ExternalLink, ListTodo, Minus, Pin, Plus, Search, SlidersHorizontal, Trash2, X } from 'lucide-react';
 import { STAGES, errorText, rpc, type Application, type Job, type Stage } from './api';
 import {
@@ -391,8 +392,13 @@ export function TodoWidget({ initialAlwaysOnTop = false }: { initialAlwaysOnTop?
 
   return <main className="todo-widget">
     <header className="todo-widget-header">
-      <div><span className="todo-widget-icon"><ListTodo size={17} /></span><h1>桌面待办</h1></div>
-      <div className="inline-actions">
+      {/* Older WebView runtimes that ignore app-region dispatch the mouse event here. */}
+      <div className="todo-widget-title" onMouseDown={(e) => {
+        if (e.button !== 0 || e.detail !== 1) return;
+        e.preventDefault();
+        void perform(() => getCurrentWindow().startDragging());
+      }}><span className="todo-widget-icon"><ListTodo size={17} /></span><h1>桌面待办</h1></div>
+      <div className="inline-actions" role="group" aria-label="窗口控制">
         <Button tone="quiet" className="icon-btn" aria-label="置顶" title="置顶" aria-pressed={pinned}
           onClick={() => void perform(async () => { await setTodoOnTop(!pinned); setPinned(!pinned); })}><Pin size={15} /></Button>
         <Button tone="quiet" className="icon-btn" aria-label="最小化" title="最小化" onClick={() => void perform(minimizeTodoWindow)}><Minus size={15} /></Button>

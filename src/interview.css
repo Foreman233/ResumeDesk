@@ -1,0 +1,53 @@
+.interview-workspace { display: grid; gap: 14px; }
+.interview-workspace .between { justify-content: space-between; }
+.interview-workspace-bar { align-items: center; }
+.interview-columns { display: grid; grid-template-columns: minmax(205px, .85fr) minmax(234px, 1fr) minmax(310px, 1.4fr); gap: 14px; align-items: start; }
+.interview-panel { min-width: 0; display: grid; gap: 13px; padding: 15px; }
+.interview-panel > h3, .interview-result h3, .interview-card h3 { margin: 0; font-size: 14px; }
+.interview-card { align-items: stretch; }
+.interview-card > .btn { justify-self: start; }
+.interview-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.interview-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.interview-pair .field { min-width: 0; }
+.interview-panel input, .interview-panel select, .interview-panel textarea { min-width: 0; }
+.interview-panel textarea, .interview-question textarea { resize: vertical; }
+.interview-candidate-picker { display: grid; gap: 7px; min-width: 0; }
+.interview-candidate-picker select { width: 100%; }
+.interview-pagination { justify-content: center; color: var(--muted); }
+.interview-candidate-overview { display: grid; gap: 5px; padding: 10px; background: var(--soft); border: 1px solid var(--line); border-radius: 8px; }
+.interview-candidate-overview > small, .interview-jd p { color: var(--muted); overflow-wrap: anywhere; }
+.interview-jd { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.interview-jd summary, .interview-question-details summary, .interview-permission summary { cursor: pointer; color: #3c426e; font-size: 12px; font-weight: 650; }
+.interview-jd p { white-space: pre-wrap; font-size: 12px; max-height: 13rem; overflow-y: auto; margin: 7px 0 0; }
+.interview-check { display: flex; gap: 7px; align-items: center; min-width: 0; line-height: 1.35; font-size: 12px; color: #414961; }
+.interview-check input[type='checkbox'] { flex: 0 0 14px; width: 14px; height: 14px; min-height: 0; padding: 0; }
+.interview-allocations { border: 1px solid var(--line); border-radius: 8px; padding: 9px; gap: 7px; }
+.interview-allocations strong { font-size: 12px; }
+.interview-allocation { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center; }
+.interview-allocation small { color: var(--muted); white-space: nowrap; }
+.interview-allocation input[type='number'] { width: 51px; min-height: 28px; padding: 2px 4px; }
+.interview-preset { min-height: 28px; padding: 4px 7px; }
+.interview-questions { display: grid; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.interview-question { min-width: 0; display: grid; gap: 8px; padding: 10px; border-radius: 9px; box-shadow: none; }
+.interview-question-head { gap: 5px; }
+.interview-question-head .icon-btn { padding: 4px; min-width: 26px; min-height: 27px; }
+.interview-grip { display: inline-flex; padding: 2px; color: var(--muted); cursor: grab; }
+.interview-grip:active { cursor: grabbing; }
+.interview-drop-target { outline: 2px solid #7365ee; outline-offset: 1px; }
+.interview-evidence { margin: 0; padding: 7px 9px; border-inline-start: 3px solid #b7adff; color: #4e5271; background: #f8f7ff; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }
+.interview-question-details { border-top: 1px solid var(--line); padding-top: 7px; }
+.interview-question-details .form-stack { margin-top: 7px; }
+.interview-permission pre { max-height: 11rem; margin: 7px 0 0; border: 1px solid var(--line); border-radius: 7px; padding: 9px; white-space: pre-wrap; overflow-wrap: anywhere; overflow: auto; font: inherit; }
+.interview-guide-row { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 7px; text-align: left; padding: 7px 4px; border: 0; border-bottom: 1px solid var(--line); color: inherit; background: transparent; cursor: pointer; }
+.interview-guide-row:hover { background: var(--soft); }
+.interview-guide-row span { min-width: 0; display: grid; }
+.interview-guide-row strong, .interview-guide-row span small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.interview-guide-row small { color: var(--muted); font-size: 11px; }
+
+@media (max-width: 1170px) {
+  .interview-columns { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .interview-result { grid-column: 1 / -1; }
+}
+@media (max-width: 720px) {
+  .interview-columns { grid-template-columns: minmax(0, 1fr); }
+}

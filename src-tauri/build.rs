@@ -10,6 +10,7 @@ fn main() {
         "open_knowledge",
         "open_source_link",
         "manage_backup",
+        "export_interview_document",
         "test_ai",
         "cancel_ai",
         "get_quick_controls",
@@ -21,6 +22,7 @@ fn main() {
         "chat_dispatch",
         "chat_send",
         "chat_cancel",
+        "generate_interview",
     ]);
     tauri_build::try_build(tauri_build::Attributes::new().app_manifest(manifest))
         .expect("failed to build ResumeDesk platform resources");

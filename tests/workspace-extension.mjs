@@ -21,6 +21,7 @@ main.setDefaultTimeout(14000);
 const dialog = () => main.getByRole('dialog').last();
 const button = (parent, name) => parent.getByRole('button', { name, exact: true });
 const nav = (name) => button(main.locator('.sidebar'), name);
+const windowVisible = async () => (await main.evaluate(() => window.__TAURI_INTERNALS__.invoke('get_quick_controls'))).widgetVisible;
 async function openTodos() {
   await nav('小工具').click();
   await button(main, '展开 待办事项').click();
@@ -118,6 +119,15 @@ try {
   const widget = await sleepUntil(() => context.pages().find(isWidget));
   widget.setDefaultTimeout(14000);
   await widget.getByRole('heading', { name: '桌面待办', exact: true }).waitFor();
+  await sleepUntil(windowVisible);
+  const controls = widget.getByRole('group', { name: '窗口控制' });
+  assert.equal(await controls.count(), 1);
+  assert.deepEqual(await controls.getByRole('button').evaluateAll((buttons) => buttons.map((item) => item.getAttribute('aria-label'))),
+    ['置顶', '最小化', '隐藏桌面待办']);
+  assert.equal(await controls.getByRole('button').evaluateAll((buttons) => buttons.every((item) => {
+    const { x, y, width, height } = item.getBoundingClientRect();
+    return item.contains(document.elementFromPoint(x + width / 2, y + height / 2));
+  })), true);
   await widget.getByRole('region', { name: '今日待办' }).waitFor();
   await widget.getByRole('region', { name: '即将面试' }).getByText(interview, { exact: true }).waitFor();
   await widget.getByRole('region', { name: '逾期待办' }).getByText(expired, { exact: true }).waitFor();
@@ -146,9 +156,16 @@ try {
   await main.getByRole('heading', { name: '待办事项', exact: true }).waitFor();
 
   await button(widget, '隐藏桌面待办').click();
+  await sleepUntil(async () => !await windowVisible());
   await button(main, '打开桌面待办').click();
+  await sleepUntil(windowVisible);
   await widget.getByRole('region', { name: '即将面试' }).getByText(interview, { exact: true }).waitFor();
-  console.log('PASS floating task deep link, return to management and hide/reopen retain state');
+  await main.getByLabel('待办状态筛选').selectOption('completed');
+  await button(main, '删除待办 ' + quick).click();
+  await button(dialog(), '确认删除').click();
+  await main.getByRole('article', { name: quick }).waitFor({ state: 'hidden' });
+  await widget.locator('details').getByText(quick, { exact: true }).waitFor({ state: 'hidden' });
+  console.log('PASS single WebView control group, floating hide/reopen and deletion synchronization');
 } finally {
   await browser.close().catch(() => {});
 }

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from 'playwright-core';
+import manifest from '../package.json' with { type: 'json' };
 import { makeFixtures, makeImportFixtures } from './make-fixtures.mjs';
 
 const [part, endpoint, scratch] = process.argv.slice(2);
@@ -20,9 +21,12 @@ await pauseFor(async () => fetch(endpoint + '/json/version').then((r) => r.ok).c
 const browser = await chromium.connectOverCDP(endpoint, { timeout: 20000 });
 const context = browser.contexts()[0];
 let page = context.pages()[0] ?? await context.waitForEvent('page', { timeout: 20000 });
+const isMainPage = (target) => !target.isClosed()
+  && /tauri\.localhost|127\.0\.0\.1:1420/.test(target.url())
+  && !target.url().includes('window=todo');
 await pauseFor(() => {
-  page = context.pages().find((target) => /tauri\.localhost|127\.0\.0\.1:1420/.test(target.url())) ?? page;
-  return !page.isClosed() && /tauri\.localhost|127\.0\.0\.1:1420/.test(page.url());
+  page = context.pages().find(isMainPage) ?? page;
+  return isMainPage(page);
 });
 page.setDefaultTimeout(14000);
 const button = (name, parent = page) => parent.getByRole('button', { name, exact: true });
@@ -73,6 +77,7 @@ async function editApplication(name, stage, note) {
 }
 try {
   await page.getByRole('heading', { name: '招聘工作台' }).waitFor();
+  await page.locator('.local-status').getByText('ResumeDesk ' + manifest.version, { exact: true }).waitFor();
   const settings = await page.evaluate(() => window.__TAURI_INTERNALS__.invoke('dispatch', { request: { action: 'settings' } }));
   const normalize = (path) => path.replace(/\\/g, '/').toLowerCase();
   assert.ok(normalize(settings.dataPath).startsWith(normalize(scratch).replace(/\/$/, '') + '/'), 'refusing a non-fixture workspace');
@@ -102,15 +107,15 @@ try {
     await importFiles([fixtures[0]], '导入简历');
     await dialog().getByText(/重复 · Lin Qiao/).waitFor();
     await button('完成', dialog()).click();
-    await page.getByLabel('搜索候选人').fill('数据平台');
+    await page.getByLabel('搜索候选人', { exact: true }).fill('数据平台');
     await page.locator('.list-count').getByText('1 位候选人').waitFor();
     await row('乔示例').waitFor();
-    await page.getByLabel('搜索候选人').fill('PYTHON');
+    await page.getByLabel('搜索候选人', { exact: true }).fill('PYTHON');
     await page.locator('.list-count').getByText('2 位候选人').waitFor();
-    await page.getByLabel('搜索候选人').fill('项目管理');
+    await page.getByLabel('搜索候选人', { exact: true }).fill('项目管理');
     await row('方样例').click();
     await page.locator('.text-view pre').filter({ hasText: '市场调研与项目管理' }).waitFor();
-    await page.getByLabel('搜索候选人').fill('');
+    await page.getByLabel('搜索候选人', { exact: true }).fill('');
     log('hash duplicate and Chinese PDF/DOCX plus English case-insensitive search');
     await row('Lin Qiao').click();
     await candidateDetails();

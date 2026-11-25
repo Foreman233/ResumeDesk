@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ComponentType } from 'react';
-import { ArrowLeft, BookOpen, Check, ChevronRight, ExternalLink, FileText, Folder, LayoutDashboard, ListTodo, Maximize2, MessageSquare, Plus, RotateCcw, Search, Upload } from 'lucide-react';
+import { ArrowLeft, BookOpen, Check, ChevronRight, ClipboardList, ExternalLink, FileText, Folder, LayoutDashboard, ListTodo, Maximize2, MessageSquare, Plus, RotateCcw, Search, Upload } from 'lucide-react';
 import { errorText, type Job } from './api';
 import { KNOWLEDGE_ACCEPT, knowledge, type KnowledgeTarget } from './knowledge-api';
 import { useKnowledgeUpload } from './knowledge-upload';
@@ -8,15 +8,19 @@ import { showTodoWindow, todo, todoChanged, type TodoSummaryGroup, type TodoTarg
 import { CreateTodoDialog, TodoWorkspace, useTodoEvents } from './todos';
 import { Button, Loading, Notice, PageHeading, date, useDebounced, useResource } from './ui';
 import { WidgetGrid, useWidgetLayout, type WidgetDefinition } from './widget-layout';
+import { InterviewCard, InterviewWorkspace } from './interview';
+import type { InterviewTarget } from './interview-api';
 import './widget-hub.css';
 
-type ToolTarget = TodoTarget & KnowledgeTarget;
+type ToolTarget = TodoTarget & KnowledgeTarget & InterviewTarget;
 type ToolServices = {
   jobs: Job[];
   report: (message: string, error?: boolean) => void;
   openCandidate: (id: number) => void;
   openJobs: (id: number, applicationId?: number) => void;
   ask: (id: number) => void;
+  aiEnabled: boolean;
+  openAiSettings: () => void;
 };
 type ToolCardProps = ToolServices & {
   active: boolean; revision: number; refresh: () => void; open: (target?: ToolTarget) => void;
@@ -35,13 +39,18 @@ const REGISTRY = {
     defaultWidth: 2, defaultHeight: 3, minWidth: 2, minHeight: 2,
     supportsResize: true, supportsFloatingWindow: false, Card: KnowledgeToolCard, Expanded: KnowledgeWorkspace,
   },
+  interview: {
+    label: '面试准备', description: '从指定简历和岗位准备、编辑及导出面试提纲。', icon: ClipboardList, category: '招聘工具',
+    defaultWidth: 2, defaultHeight: 3, minWidth: 2, minHeight: 2,
+    supportsResize: true, supportsFloatingWindow: false, Card: InterviewCard, Expanded: InterviewWorkspace,
+  },
 } satisfies Record<string, ToolDefinition>;
 type ToolId = keyof typeof REGISTRY;
 const TOOL_ORDER = Object.keys(REGISTRY) as ToolId[];
 export type ToolDestination = { id: ToolId; target?: ToolTarget };
 
-export function WidgetHub({ initial, navigation, ...services }: ToolServices & {
-  initial?: ToolDestination; navigation: number;
+export function WidgetHub({ initial, navigation, visible, ...services }: ToolServices & {
+  initial?: ToolDestination; navigation: number; visible: boolean;
 }) {
   const layout = useWidgetLayout('tools', REGISTRY, TOOL_ORDER, services.report);
   const [query, setQuery] = useState('');
@@ -60,7 +69,7 @@ export function WidgetHub({ initial, navigation, ...services }: ToolServices & {
   }
   function toolProps(id: ToolId, active: boolean): ToolCardProps {
     return {
-      ...services, active, revision: revisions[id] ?? 0, open: (target) => open(id, target),
+      ...services, active: visible && active, revision: revisions[id] ?? 0, open: (target) => open(id, target),
       refresh: () => setRevisions((old) => ({ ...old, [id]: (old[id] ?? 0) + 1 })),
     };
   }

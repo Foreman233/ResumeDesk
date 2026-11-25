@@ -19,7 +19,7 @@ const DASHBOARD_WIDGETS: &[&str] = &[
     "controls",
     "knowledge",
 ];
-const TOOL_WIDGETS: &[&str] = &["todos", "knowledge"];
+const TOOL_WIDGETS: &[&str] = &["todos", "knowledge", "interview"];
 
 #[derive(Clone, Copy, Default, Deserialize)]
 #[serde(rename_all = "lowercase")]
